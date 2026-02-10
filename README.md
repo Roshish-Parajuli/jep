@@ -1,6 +1,6 @@
-# Valentine's Gift Website Platform
+# Website
 
-A beautiful, romantic web platform for creating personalized Valentine's Day pages. Each page is unique, private, and filled with love.
+A beautiful, romantic web platform for creating personalized digital gift pages. Each page is unique, private, and filled with love.
 
 ## Features
 
