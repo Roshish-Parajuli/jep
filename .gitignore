@@ -14,7 +14,6 @@ lerna-debug.log*
 .custom-ident
 
 # Directory for compiled output
-dist
 build
 .next
 .nuxt
