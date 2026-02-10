@@ -67,3 +67,4 @@ CNAME
 
 # For exposed key
 micro-saas.pem
+dist/
