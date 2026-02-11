@@ -89,23 +89,19 @@ function App() {
   const hostname = window.location.hostname;
 
   // Improved subdomain detection
-  // This handles:
-  // - localhost
-  // - valentine.micro-saas.online
-  // - micro-saas.online
   const parts = hostname.split('.');
   let subdomain = null;
 
   if (parts.length >= 3) {
-    // If we have 3 or more parts, the first part is likely the subdomain
-    // unless it's www
     if (parts[0] !== 'www') {
       subdomain = parts[0];
     }
   } else if (parts.length === 2 && hostname.includes('localhost')) {
-    // Handle cases like valentine.localhost
     subdomain = parts[0];
   }
+
+  console.log('Detected Hostname:', hostname);
+  console.log('Detected Subdomain:', subdomain);
 
   let AppToRender;
   switch (subdomain) {
