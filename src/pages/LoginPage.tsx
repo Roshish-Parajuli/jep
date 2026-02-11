@@ -52,7 +52,7 @@ export default function LoginPage() {
       <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg text-center">
         <Heart className="w-12 h-12 text-rose-500 mx-auto mb-4" fill="currentColor" />
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Admin Access</h1>
-        <p className="text-gray-500 mb-6">Sign in to manage Valentine pages and other SaaS products.</p>
+        <p className="text-gray-500 mb-6">Sign in to manage Digital Gift pages and other SaaS products.</p>
         <form onSubmit={handleLogin}>
           <input
             type="email"

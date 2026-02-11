@@ -38,8 +38,8 @@ export function HeroSection({ recipientName, headline, subtext, onStart }: HeroS
       </div>
 
       <div className="relative z-10 text-center px-6 max-w-4xl">
-        <div className="mb-8 animate-fade-in">
-          <Heart className="w-20 h-20 text-rose-500 mx-auto mb-6 animate-pulse" fill="currentColor" />
+        <div className="mb-8 animate-fade-in text-center relative">
+          <Heart className="w-20 h-20 text-rose-500 mx-auto mb-6 animate-heartbeat" fill="currentColor" />
         </div>
 
         <h1 className="text-5xl md:text-7xl font-bold text-rose-600 mb-6 animate-fade-in-up">
@@ -58,9 +58,11 @@ export function HeroSection({ recipientName, headline, subtext, onStart }: HeroS
 
         <button
           onClick={onStart}
-          className="group relative px-10 py-4 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 animate-fade-in-up animation-delay-600"
+          className="group relative px-10 py-5 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 animate-fade-in-up animation-delay-600"
         >
-          <span className="relative z-10">Explore</span>
+          <span className="relative z-10 text-xl tracking-wide font-medium">
+            The first page of our forever chapter
+          </span>
           <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         </button>
       </div>
@@ -103,6 +105,14 @@ export function HeroSection({ recipientName, headline, subtext, onStart }: HeroS
           }
         }
 
+        @keyframes heartbeat {
+          0% { transform: scale(1); }
+          14% { transform: scale(1.1); }
+          28% { transform: scale(1); }
+          42% { transform: scale(1.1); }
+          70% { transform: scale(1); }
+        }
+
         .animate-float-up {
           animation: float-up 15s linear infinite;
         }
@@ -113,6 +123,10 @@ export function HeroSection({ recipientName, headline, subtext, onStart }: HeroS
 
         .animate-fade-in-up {
           animation: fade-in-up 1s ease-out forwards;
+        }
+
+        .animate-heartbeat {
+          animation: heartbeat 2s ease-in-out infinite;
         }
 
         .animation-delay-200 {

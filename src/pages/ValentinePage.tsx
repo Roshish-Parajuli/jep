@@ -29,7 +29,7 @@ export default function ValentinePage({ slug: slugFromProp }: ValentinePageProps
 
   useEffect(() => {
     if (!slug) {
-      setError('No Valentine page slug provided.');
+      setError('No Digital Gift page slug provided.');
       setLoading(false);
       return;
     }
@@ -45,7 +45,7 @@ export default function ValentinePage({ slug: slugFromProp }: ValentinePageProps
         if (pageError) throw pageError;
 
         if (!pageData) {
-          setError('This Valentine page does not exist. Please check the URL.');
+          setError('This Digital Gift page does not exist. Please check the URL.');
           setLoading(false);
           return;
         }
@@ -64,7 +64,7 @@ export default function ValentinePage({ slug: slugFromProp }: ValentinePageProps
         setLoading(false);
       } catch (err) {
         console.error('Error fetching Valentine page:', err);
-        setError('Failed to load this Valentine page. Please try again.');
+        setError('Failed to load this Digital Gift page. Please try again.');
         setLoading(false);
       }
     };
@@ -84,7 +84,7 @@ export default function ValentinePage({ slug: slugFromProp }: ValentinePageProps
       <div className="min-h-screen bg-gradient-to-br from-rose-100 via-pink-50 to-red-100 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-16 h-16 text-rose-500 animate-spin mx-auto mb-4" />
-          <p className="text-rose-400 text-lg">Loading your Valentine...</p>
+          <p className="text-rose-400 text-lg">Loading your Digital Gift...</p>
         </div>
       </div>
     );
@@ -126,7 +126,7 @@ export default function ValentinePage({ slug: slugFromProp }: ValentinePageProps
         </div>
       )}
 
-      <MusicSection musicUrl={pageData.music_url} />
+      <MusicSection musicUrl={pageData.music_url} autoPlay={started} />
     </div>
   );
 }

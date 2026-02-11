@@ -3,16 +3,32 @@ import { useState, useRef, useEffect } from 'react';
 
 interface MusicSectionProps {
   musicUrl: string | null;
+  autoPlay?: boolean;
 }
 
-export function MusicSection({ musicUrl }: MusicSectionProps) {
+export function MusicSection({ musicUrl, autoPlay }: MusicSectionProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (musicUrl) {
-      audioRef.current = new Audio(musicUrl);
-      audioRef.current.loop = true;
+      const audio = new Audio(musicUrl);
+      audio.loop = true;
+      audioRef.current = audio;
+
+      if (autoPlay) {
+        // Many browsers require interaction before autoplay. 
+        // We assume interaction happened via the 'Explore' button in the parent.
+        const playAudio = async () => {
+          try {
+            await audio.play();
+            setIsPlaying(true);
+          } catch (err) {
+            console.log("Autoplay was blocked or failed:", err);
+          }
+        };
+        playAudio();
+      }
     }
 
     return () => {
@@ -21,7 +37,7 @@ export function MusicSection({ musicUrl }: MusicSectionProps) {
         audioRef.current = null;
       }
     };
-  }, [musicUrl]);
+  }, [musicUrl, autoPlay]);
 
   const togglePlay = () => {
     if (!audioRef.current) return;

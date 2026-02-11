@@ -1,5 +1,5 @@
 import { Heart, Lock, Unlock } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface SecretMessageSectionProps {
   message: string;
@@ -20,17 +20,25 @@ export function SecretMessageSection({ message, secretCode }: SecretMessageSecti
 
     setRevealed(true);
     setError('');
-
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index < message.length) {
-        setDisplayedText((prev) => prev + message[index]);
-        index++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 30);
   };
+
+  useEffect(() => {
+    if (!revealed || !message) return;
+
+    let currentIndex = 0;
+    setDisplayedText('');
+
+    const intervalId = setInterval(() => {
+      if (currentIndex < message.length) {
+        currentIndex++;
+        setDisplayedText(message.slice(0, currentIndex));
+      } else {
+        clearInterval(intervalId);
+      }
+    }, 40);
+
+    return () => clearInterval(intervalId);
+  }, [revealed, message]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50 to-pink-100 py-20 px-6 flex items-center justify-center">

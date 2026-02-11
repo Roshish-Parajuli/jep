@@ -16,7 +16,7 @@ interface ValentineFormPageProps {
 
 const ValentineFormPage: React.FC<ValentineFormPageProps> = ({ pageData, onBack }) => {
   const [recipientName, setRecipientName] = useState('');
-  const [heroHeadline, setHeroHeadline] = useState('For You, Always');
+  const [heroHeadline, setHeroHeadline] = useState('Something Special For You');
   const [heroSubtext, setHeroSubtext] = useState('');
   const [secretMessage, setSecretMessage] = useState('');
   const [secretCode, setSecretCode] = useState('');
@@ -209,10 +209,10 @@ const ValentineFormPage: React.FC<ValentineFormPageProps> = ({ pageData, onBack 
         <div className="max-w-2xl mx-auto text-center">
           <Heart className="w-20 h-20 text-rose-500 mx-auto mb-6 animate-pulse" fill="currentColor" />
           <h1 className="text-4xl md:text-5xl font-bold text-rose-600 mb-4">
-            {pageData ? 'Page Updated Successfully!' : 'Your Valentine Page is Ready!'}
+            {pageData ? 'Page Updated Successfully!' : 'Your Digital Gift is Ready!'}
           </h1>
           <p className="text-lg text-rose-400 mb-8">
-            Share this special link with your loved one
+            Share this secure link with your recipient.
           </p>
 
           <div className="bg-white rounded-xl p-6 shadow-lg mb-6">
@@ -258,7 +258,7 @@ const ValentineFormPage: React.FC<ValentineFormPageProps> = ({ pageData, onBack 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-100 via-pink-50 to-red-100 py-12 px-6">
       <div className="max-w-4xl mx-auto">
-      <div className="flex justify-between items-center mb-12">
+        <div className="flex justify-between items-center mb-12">
           <button
             onClick={onBack}
             className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-600 rounded-lg shadow hover:shadow-md transition-all"
@@ -269,10 +269,10 @@ const ValentineFormPage: React.FC<ValentineFormPageProps> = ({ pageData, onBack 
           <div className="text-center flex-1">
             <Heart className="w-16 h-16 text-rose-500 mx-auto mb-4" fill="currentColor" />
             <h1 className="text-4xl md:text-5xl font-bold text-rose-600 mb-2">
-              {pageData ? 'Edit Valentine Page' : 'Create a Valentine Page'}
+              {pageData ? 'Edit Digital Gift' : 'Create a Digital Gift'}
             </h1>
             <p className="text-lg text-rose-400">
-              {pageData ? 'Update the details below' : 'Build a personalized digital love letter'}
+              {pageData ? 'Update the details below' : 'Build a personalized interactive gift experience'}
             </p>
           </div>
           <div className="w-[120px]" /> {/* Spacer to balance the header */}
@@ -313,7 +313,7 @@ const ValentineFormPage: React.FC<ValentineFormPageProps> = ({ pageData, onBack 
                   value={heroHeadline}
                   onChange={(e) => setHeroHeadline(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-                  placeholder="For You, Always"
+                  placeholder="Something Special For You"
                 />
               </div>
 
@@ -455,19 +455,19 @@ const ValentineFormPage: React.FC<ValentineFormPageProps> = ({ pageData, onBack 
           </div>
 
           <div className="bg-white rounded-2xl p-8 shadow-lg">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Love Letter</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Personal Message</h2>
             <textarea
               value={loveLetter}
               onChange={(e) => setLoveLetter(e.target.value)}
               required
               rows={8}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-              placeholder="Write your love letter... Use line breaks for paragraphs."
+              placeholder="Write your personal message... Use line breaks for paragraphs."
             />
           </div>
 
           <div className="bg-white rounded-2xl p-8 shadow-lg">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Promises</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Special Commitments</h2>
             {promises.map((promise, index) => (
               <div key={index} className="mb-3 flex items-center space-x-2">
                 <input
@@ -494,7 +494,7 @@ const ValentineFormPage: React.FC<ValentineFormPageProps> = ({ pageData, onBack 
               className="flex items-center space-x-2 text-rose-600 hover:text-rose-700 font-semibold"
             >
               <Plus size={20} />
-              <span>Add Promise</span>
+              <span>Add Commitment</span>
             </button>
           </div>
 
@@ -543,7 +543,7 @@ const ValentineFormPage: React.FC<ValentineFormPageProps> = ({ pageData, onBack 
               ) : (
                 <>
                   <Heart size={24} fill="currentColor" />
-                  <span>{pageData ? 'Update Page' : 'Create Valentine Page'}</span>
+                  <span>{pageData ? 'Update Page' : 'Create Digital Gift'}</span>
                 </>
               )}
             </button>

@@ -6,6 +6,7 @@ import AdminDashboardPage from './pages/AdminDashboardPage';
 import ValentinePage from './pages/ValentinePage';
 import HomePage from './pages/HomePage';
 import PdfToTextConverterPage from './pages/PdfToTextConverterPage';
+import ResumeReshaperPage from './pages/ResumeReshaperPage';
 import ComingSoonPage from './pages/ComingSoonPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -44,6 +45,7 @@ function App() {
           }
         />
         <Route path="/pdf-to-text" element={<PdfToTextConverterPage />} />
+        <Route path="/resume-reshaper" element={<ResumeReshaperPage />} />
         <Route path="/coming-soon" element={<ComingSoonPage />} />
         {/* Fallback for unmatched routes */}
         <Route path="*" element={<HomePage />} />

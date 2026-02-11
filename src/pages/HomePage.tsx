@@ -1,16 +1,41 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, FileText, PlusCircle, ExternalLink, Mail, ArrowRight } from 'lucide-react';
+import { Heart, FileText, PlusCircle, ExternalLink, Mail, ArrowRight, Sparkles, Lock, Smile, Search, Code, Moon, CreditCard, Clock } from 'lucide-react';
+
+const FloatingParticles: React.FC = () => (
+  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    {Array.from({ length: 20 }).map((_, i) => (
+      <div
+        key={i}
+        className="absolute w-2 h-2 bg-indigo-500/10 rounded-full animate-float"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          animationDuration: `${10 + Math.random() * 20}s`,
+          animationDelay: `-${Math.random() * 20}s`,
+        }}
+      />
+    ))}
+  </div>
+);
 
 const HomePage: React.FC = () => {
   const saasProducts = [
     {
-      title: "Valentine Digital Gift",
-      description: "Create personalized, interactive digital gift experiences for your loved ones with photos, music, and secret messages.",
+      title: "Digital Gift Experience",
+      description: "Create personalized, interactive digital gift experiences for your loved ones with photos, music, and secret messages. A gift that stays forever.",
       icon: <Heart className="text-rose-500" size={32} />,
       link: "/valentine/z90ab6s6",
       color: "from-rose-500 to-pink-500",
       tag: "Popular"
+    },
+    {
+      title: "Resume Reshaper",
+      description: "Generate an updated resume to match the job description, just paste the job description and your resume and we will generate a resume that matches the job description.",
+      icon: <FileText className="text-emerald-500" size={32} />,
+      link: "/resume-reshaper",
+      color: "from-emerald-500 to-teal-500",
+      tag: "Live Now"
     },
     {
       title: "PDF to Text Converter",
@@ -20,6 +45,78 @@ const HomePage: React.FC = () => {
       color: "from-blue-500 to-indigo-500",
       tag: "Free Tool"
     },
+    {
+      title: "Daily Affirmation AI",
+      description: "Receive personalized, AI-generated daily motivation and affirmations tailored to your goals and mood.",
+      icon: <Sparkles className="text-amber-500" size={32} />,
+      link: "/coming-soon",
+      color: "from-amber-500 to-orange-500",
+      tag: "New"
+    },
+    {
+      title: "Snippet Secure",
+      description: "An ultra-private, encrypted vault for your code snippets and sensitive configuration files. Zero-knowledge storage.",
+      icon: <Lock className="text-slate-700" size={32} />,
+      link: "/coming-soon",
+      color: "from-slate-700 to-slate-900",
+      tag: "Secure"
+    },
+    {
+      title: "Mood Tracker for Pairs",
+      description: "A private space for couples to track their emotional health together with AI-driven relationship insights.",
+      icon: <Smile className="text-pink-400" size={32} />,
+      link: "/coming-soon",
+      color: "from-pink-400 to-rose-400",
+      tag: "Relationship"
+    },
+    {
+      title: "SEO Audit Pro",
+      description: "One-click SEO health checks for your micro-apps. Get actionable insights to rank higher in search results.",
+      icon: <Search className="text-blue-600" size={32} />,
+      link: "/coming-soon",
+      color: "from-blue-600 to-cyan-600",
+      tag: "Utilities"
+    },
+    {
+      title: "Mini-SaaS Boilerplate",
+      description: "A complete, production-ready starter kit to launch your own Micro-SaaS in minutes. Frontend + Backend.",
+      icon: <Code className="text-violet-600" size={32} />,
+      link: "/coming-soon",
+      color: "from-violet-600 to-purple-600",
+      tag: "Builder Tool"
+    },
+    {
+      title: "Dream Journal AI",
+      description: "Record your dreams and get AI-powered psychological insights and pattern analysis. Discover your subconscious.",
+      icon: <Moon className="text-indigo-400" size={32} />,
+      link: "/coming-soon",
+      color: "from-indigo-400 to-purple-500",
+      tag: "Personal"
+    },
+    {
+      title: "Subscription Tracker",
+      description: "Manage all your digital subscriptions in one place. Get alerts before renewals and save money effortlessly.",
+      icon: <CreditCard className="text-emerald-400" size={32} />,
+      link: "/coming-soon",
+      color: "from-emerald-400 to-green-500",
+      tag: "Finance"
+    },
+    {
+      title: "Focus Flow",
+      description: "A minimalist, AI-enhanced Pomodoro timer designed for deep work. Syncs with your productivity goals.",
+      icon: <Clock className="text-orange-400" size={32} />,
+      link: "/coming-soon",
+      color: "from-orange-400 to-red-400",
+      tag: "Productivity"
+    },
+    {
+      title: "Secure Privacy Vault",
+      description: "Generate highly secure, encrypted links to share sensitive information or documents that only exist for those with the link.",
+      icon: <PlusCircle className="text-emerald-500" size={32} />,
+      link: "/coming-soon",
+      color: "from-emerald-500 to-teal-500",
+      tag: "Coming Soon"
+    }
   ];
 
   return (
@@ -45,13 +142,14 @@ const HomePage: React.FC = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
-        <div className="max-w-7xl mx-auto text-center">
+      <section className="relative pt-32 pb-20 px-4 overflow-hidden">
+        <FloatingParticles />
+        <div className="max-w-7xl mx-auto text-center relative z-10">
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-b from-slate-900 via-slate-800 to-slate-600">
-            The Hub for <span className="text-indigo-600">Micro-SaaS</span>
+            The Hub for <span className="text-indigo-600">Secure Micro-SaaS</span>
           </h1>
           <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Discover a curated marketplace of lightweight, powerful SaaS solutions designed to solve specific problems effortlessly.
+            Discover a curated marketplace of lightweight, powerful SaaS solutions. From lifelong digital gifts to high-security link sharing, we build tools that matter.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="#marketplace" className="px-8 py-4 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-all shadow-xl flex items-center gap-2">
@@ -65,7 +163,8 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Product Grid */}
-      <section id="marketplace" className="py-20 bg-white">
+      <section id="marketplace" className="py-20 bg-white relative">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
             <div>
@@ -119,6 +218,35 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+      {/* Pitch Section */}
+      <section className="py-20 bg-slate-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+            <div className="space-y-4">
+              <div className="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <ExternalLink size={24} />
+              </div>
+              <h3 className="text-2xl font-bold">Lifelong Availability</h3>
+              <p className="text-slate-400">Our digital gifts and tools are built to stay. Your memories and data aren't going anywhere—they are here for life.</p>
+            </div>
+            <div className="space-y-4">
+              <div className="w-12 h-12 bg-rose-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Heart size={24} />
+              </div>
+              <h3 className="text-2xl font-bold">Privacy First</h3>
+              <p className="text-slate-400">We create secure, obfuscated links. Only those you share the URL with can ever know the page exists. No public indices.</p>
+            </div>
+            <div className="space-y-4">
+              <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <FileText size={24} />
+              </div>
+              <h3 className="text-2xl font-bold">Simple & Focused</h3>
+              <p className="text-slate-400">No bloat. No complex setups. Just simple SaaS tools that solve one thing perfectly and stay accessible forever.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="py-12 border-t border-slate-200 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-8">
@@ -131,6 +259,17 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </footer>
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0) translateX(0); }
+          25% { transform: translateY(-30px) translateX(20px); }
+          50% { transform: translateY(-60px) translateX(-20px); }
+          75% { transform: translateY(-30px) translateX(10px); }
+        }
+        .animate-float {
+          animation: float 20s linear infinite;
+        }
+      `}</style>
     </div>
   );
 };
