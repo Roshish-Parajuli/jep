@@ -24,19 +24,41 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 };
 
 const ValentineSubdomainApp = () => {
-  const { slug } = useParams<{ slug: string }>();
-  // Here, the "slug" is the entire path after the domain.
-  // For example, for valentine.micro-saas.online/my-valentine, slug will be "my-valentine"
-  // We need to extract the slug from the path.
-  // We will pass the pathname as a slug to ValentinePage.
-  const pathname = window.location.pathname.slice(1);
-
-  return <ValentinePage slug={pathname} />;
-}
+  return (
+    <Routes>
+      <Route path="/admin" element={<LoginPage />} />
+      <Route
+        path="/admin-dashboard"
+        element={
+          <ProtectedRoute>
+            <AdminDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/valentine/:slug" element={<ValentinePage />} />
+      <Route path="/:slug" element={<ValentinePage />} />
+      <Route path="*" element={<ValentinePage />} />
+    </Routes>
+  );
+};
 
 const PdfToTextSubdomainApp = () => {
-  return <PdfToTextConverterPage />;
-}
+  return (
+    <Routes>
+      <Route path="/admin" element={<LoginPage />} />
+      <Route
+        path="/admin-dashboard"
+        element={
+          <ProtectedRoute>
+            <AdminDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/" element={<PdfToTextConverterPage />} />
+      <Route path="*" element={<PdfToTextConverterPage />} />
+    </Routes>
+  );
+};
 
 const MainApp = () => (
   <Routes>
@@ -65,9 +87,25 @@ const MainApp = () => (
 
 function App() {
   const hostname = window.location.hostname;
-  // Use a regex to handle localhost and production domains
-  const match = hostname.match(/^(?:(.*?)\.)?(?:.*?)\.(?:.*)$/);
-  const subdomain = (match && match[1] && !['www', 'localhost'].includes(match[1])) ? match[1] : null;
+
+  // Improved subdomain detection
+  // This handles:
+  // - localhost
+  // - valentine.micro-saas.online
+  // - micro-saas.online
+  const parts = hostname.split('.');
+  let subdomain = null;
+
+  if (parts.length >= 3) {
+    // If we have 3 or more parts, the first part is likely the subdomain
+    // unless it's www
+    if (parts[0] !== 'www') {
+      subdomain = parts[0];
+    }
+  } else if (parts.length === 2 && hostname.includes('localhost')) {
+    // Handle cases like valentine.localhost
+    subdomain = parts[0];
+  }
 
   let AppToRender;
   switch (subdomain) {
