@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { ValentinePage as ValentinePageType, ValentinePhoto } from '../types/valentine';
+import { GiftSite } from '../types/gift';
 import { HeroSection } from '../components/ValentinePage/HeroSection';
 import { GallerySection } from '../components/ValentinePage/GallerySection';
 import { SecretMessageSection } from '../components/ValentinePage/SecretMessageSection';
@@ -10,6 +11,7 @@ import { LoveLetterSection } from '../components/ValentinePage/LoveLetterSection
 import { MusicSection } from '../components/ValentinePage/MusicSection';
 import { PromiseSection } from '../components/ValentinePage/PromiseSection';
 import { FinalSurpriseSection } from '../components/ValentinePage/FinalSurpriseSection';
+import { ValentineAskTemplate } from '../components/GiftTemplates/ValentineAskTemplate';
 import { useParams } from 'react-router-dom';
 
 interface ValentinePageProps {
@@ -19,12 +21,17 @@ interface ValentinePageProps {
 export default function ValentinePage({ slug: slugFromProp }: ValentinePageProps) {
   const params = useParams<{ slug: string }>();
   const slug = slugFromProp || params.slug;
-  const [pageData, setPageData] = useState<ValentinePageType | null>(null);
+
+  // State for Legacy Pages
+  const [legacyData, setLegacyData] = useState<ValentinePageType | null>(null);
   const [photos, setPhotos] = useState<ValentinePhoto[]>([]);
+
+  // State for New Gift Sites
+  const [giftSite, setGiftSite] = useState<GiftSite | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [started, setStarted] = useState(false);
-
   const galleryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,13 +43,30 @@ export default function ValentinePage({ slug: slugFromProp }: ValentinePageProps
 
     const fetchData = async () => {
       try {
+        setLoading(true);
+        setError(null);
+
+        // 1. Try fetching from new 'gift_sites' table first
+        const { data: giftData, error: giftError } = await supabase
+          .from('gift_sites')
+          .select('*')
+          .eq('slug', slug)
+          .maybeSingle();
+
+        if (giftData) {
+          setGiftSite(giftData);
+          setLoading(false);
+          return;
+        }
+
+        // 2. If not found, try fetching from legacy 'valentine_pages' table
         const { data: pageData, error: pageError } = await supabase
           .from('valentine_pages')
           .select('*')
           .eq('slug', slug)
           .maybeSingle();
 
-        if (pageError) throw pageError;
+        if (pageError && !giftError) throw pageError;
 
         if (!pageData) {
           setError('This Digital Gift page does not exist. Please check the URL.');
@@ -50,8 +74,9 @@ export default function ValentinePage({ slug: slugFromProp }: ValentinePageProps
           return;
         }
 
-        setPageData(pageData);
+        setLegacyData(pageData);
 
+        // Fetch photos for legacy pages
         const { data: photosData, error: photosError } = await supabase
           .from('valentine_photos')
           .select('*')
@@ -63,7 +88,7 @@ export default function ValentinePage({ slug: slugFromProp }: ValentinePageProps
         setPhotos(photosData || []);
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching Valentine page:', err);
+        console.error('Error fetching Gift page:', err);
         setError('Failed to load this Digital Gift page. Please try again.');
         setLoading(false);
       }
@@ -90,7 +115,7 @@ export default function ValentinePage({ slug: slugFromProp }: ValentinePageProps
     );
   }
 
-  if (error || !pageData) {
+  if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-rose-100 via-pink-50 to-red-100 flex items-center justify-center px-6">
         <div className="text-center max-w-md">
@@ -101,32 +126,77 @@ export default function ValentinePage({ slug: slugFromProp }: ValentinePageProps
     );
   }
 
-  return (
-    <div className="relative">
-      <meta name="robots" content="noindex, nofollow" />
+  // --- RENDERER FOR NEW GIFT SITES ---
+  if (giftSite) {
+    if (giftSite.template_type === 'valentine_ask') {
+      return <ValentineAskTemplate content={giftSite.content} giftSiteId={giftSite.id} />;
+    }
 
-      <HeroSection
-        recipientName={pageData.recipient_name}
-        headline={pageData.hero_headline}
-        subtext={pageData.hero_subtext}
-        onStart={handleStart}
-      />
-
-      {started && (
-        <div ref={galleryRef}>
-          <GallerySection photos={photos} />
-          <SecretMessageSection
-            message={pageData.secret_message}
-            secretCode={pageData.secret_code}
+    if (giftSite.template_type === 'valentine_classic') {
+      // Map new content to legacy format for reuse
+      const content = giftSite.content;
+      return (
+        <div className="relative">
+          <HeroSection
+            recipientName={content.recipient_name || 'Valentine'}
+            headline={content.hero_headline || 'Happy Valentine Day!'}
+            subtext={content.hero_subtext || ''}
+            onStart={handleStart}
           />
-          <TimelineSection timeline={pageData.timeline} />
-          <LoveLetterSection letter={pageData.love_letter} />
-          <PromiseSection promises={pageData.promises} />
-          <FinalSurpriseSection message={pageData.final_message} />
+          {started && (
+            <div ref={galleryRef}>
+              {/* Note: Photos not yet supported in new schema, skipping gallery or passing empty */}
+              <GallerySection photos={[]} />
+              <SecretMessageSection
+                message={content.secret_message || ''}
+                secretCode={content.secret_code || null}
+              />
+              <TimelineSection timeline={content.timeline || []} />
+              <LoveLetterSection letter={content.love_letter || ''} />
+              <PromiseSection promises={content.promises || []} />
+              <FinalSurpriseSection message={content.final_message || ''} />
+            </div>
+          )}
+          <MusicSection musicUrl={content.music_url || null} autoPlay={started} />
         </div>
-      )}
+      );
+    }
 
-      <MusicSection musicUrl={pageData.music_url} autoPlay={started} />
-    </div>
-  );
+    // Fallback for unknown templates
+    return <div>Unknown template type: {giftSite.template_type}</div>;
+  }
+
+  // --- RENDERER FOR LEGACY PAGES ---
+  if (legacyData) {
+    return (
+      <div className="relative">
+        <meta name="robots" content="noindex, nofollow" />
+
+        <HeroSection
+          recipientName={legacyData.recipient_name}
+          headline={legacyData.hero_headline}
+          subtext={legacyData.hero_subtext}
+          onStart={handleStart}
+        />
+
+        {started && (
+          <div ref={galleryRef}>
+            <GallerySection photos={photos} />
+            <SecretMessageSection
+              message={legacyData.secret_message}
+              secretCode={legacyData.secret_code}
+            />
+            <TimelineSection timeline={legacyData.timeline} />
+            <LoveLetterSection letter={legacyData.love_letter} />
+            <PromiseSection promises={legacyData.promises} />
+            <FinalSurpriseSection message={legacyData.final_message} />
+          </div>
+        )}
+
+        <MusicSection musicUrl={legacyData.music_url} autoPlay={started} />
+      </div>
+    );
+  }
+
+  return null;
 }

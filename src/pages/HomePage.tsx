@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, FileText, PlusCircle, ExternalLink, Mail, ArrowRight, Sparkles, Lock, Smile, Search, Code, Moon, CreditCard, Clock } from 'lucide-react';
+import { Heart, FileText, PlusCircle, ExternalLink, Mail, ArrowRight } from 'lucide-react';
 
 const FloatingParticles: React.FC = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -25,7 +25,7 @@ const HomePage: React.FC = () => {
       title: "Digital Gift Experience",
       description: "Create personalized, interactive digital gift experiences for your loved ones with photos, music, and secret messages. A gift that stays forever.",
       icon: <Heart className="text-rose-500" size={32} />,
-      link: "/valentine/z90ab6s6",
+      link: "/gifts", // Updated to point to new landing page
       color: "from-rose-500 to-pink-500",
       tag: "Popular"
     },
@@ -37,6 +37,7 @@ const HomePage: React.FC = () => {
       color: "from-emerald-500 to-teal-500",
       tag: "Live Now"
     },
+    /*
     {
       title: "PDF to Text Converter",
       description: "Quickly convert complex PDF documents into clean, editable text files using our advanced parsing engine.",
@@ -117,6 +118,7 @@ const HomePage: React.FC = () => {
       color: "from-emerald-500 to-teal-500",
       tag: "Coming Soon"
     }
+    */
   ];
 
   return (
@@ -134,7 +136,7 @@ const HomePage: React.FC = () => {
           </div>
           <div className="hidden md:flex items-center gap-6">
             <a href="#marketplace" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Marketplace</a>
-            <a href="mailto:admin@micro-saas.online?subject=Submit my SaaS" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg">
+            <a href="mailto:contact@micro-saas.online?subject=Submit my SaaS" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg">
               Submit SaaS
             </a>
           </div>
@@ -155,7 +157,7 @@ const HomePage: React.FC = () => {
             <a href="#marketplace" className="px-8 py-4 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-all shadow-xl flex items-center gap-2">
               Explore Products <ArrowRight size={20} />
             </a>
-            <a href="mailto:admin@micro-saas.online?subject=Partnership Inquiry" className="px-8 py-4 rounded-xl bg-white text-slate-900 border border-slate-200 font-bold hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
+            <a href="mailto:contact@micro-saas.online?subject=Contact Us" className="px-8 py-4 rounded-xl bg-white text-slate-900 border border-slate-200 font-bold hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
               Contact Support <Mail size={20} />
             </a>
           </div>
@@ -208,7 +210,7 @@ const HomePage: React.FC = () => {
               <h3 className="text-xl font-bold text-slate-900 mb-2">Build a SaaS?</h3>
               <p className="text-slate-500 mb-6">List your micro-SaaS here and reach thousands of users.</p>
               <a
-                href="mailto:admin@micro-saas.online?subject=Submit my SaaS"
+                href="mailto:contact@micro-saas.online?subject=Submit my SaaS"
                 className="text-indigo-600 font-bold hover:underline underline-offset-4"
               >
                 Submit your project
