@@ -67,4 +67,15 @@ CNAME
 
 # For exposed key
 micro-saas.pem
+
+# Unnecessary for GitHub Pages deployment
+supabase/
+vercel.json
+nginx.conf.example
+
+# Build output
 dist/
+
+# Personal/Unrelated tools (if you want to keep them local only)
+# src/pages/PdfToTextConverterPage.tsx
+# src/pages/ResumeReshaperPage.tsx

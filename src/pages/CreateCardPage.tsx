@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ArrowLeft, Palette, Type, Send, Loader2, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Palette, Type, Send, Loader2, Sparkles, Image as ImageIcon, Plus } from 'lucide-react';
 import { CardTemplateType } from '../types/gift';
 
 interface CardTemplateOption {
@@ -11,9 +11,9 @@ interface CardTemplateOption {
 }
 
 const templates: CardTemplateOption[] = [
+    { id: 'story_photo', title: 'Photo Focus', gradient: 'from-rose-400 to-pink-500' },
     { id: 'story_simple', title: 'Simple Story', gradient: 'from-pink-400 to-rose-400' },
     { id: 'story_animated', title: 'Animated Vibes', gradient: 'from-violet-500 to-purple-500' },
-    { id: 'story_photo', title: 'Photo Focus', gradient: 'from-blue-400 to-cyan-400' },
 ];
 
 const themes = [
@@ -29,12 +29,30 @@ export default function CreateCardPage() {
     const [activeTab, setActiveTab] = useState<'content' | 'style'>('content');
 
     const [formData, setFormData] = useState({
+        recipient_name: '',
+        sender_name: '',
+        message: '',
+        template_id: 'story_photo' as CardTemplateType,
+        theme_color: 'from-rose-400 to-pink-500',
+        photo_url: ''
+    });
+
+    const defaults = {
         recipient_name: 'Sarah',
         sender_name: 'John',
-        message: 'Happy Birthday! Have a magical day.',
-        template_id: 'story_simple' as CardTemplateType,
-        theme_color: 'from-purple-500 to-pink-500'
-    });
+        message: 'Happy Birthday! Have a magical day.'
+    };
+
+    const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData(prev => ({ ...prev, photo_url: reader.result as string }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleCreate = async () => {
         setLoading(true);
@@ -46,10 +64,11 @@ export default function CreateCardPage() {
                 user_id: user.id,
                 template_id: formData.template_id,
                 content: {
-                    recipient_name: formData.recipient_name,
-                    sender_name: formData.sender_name,
-                    message: formData.message,
-                    theme_color: formData.theme_color
+                    recipient_name: formData.recipient_name || defaults.recipient_name,
+                    sender_name: formData.sender_name || defaults.sender_name,
+                    message: formData.message || defaults.message,
+                    theme_color: formData.theme_color,
+                    photo_url: formData.photo_url
                 }
             });
 
@@ -102,6 +121,7 @@ export default function CreateCardPage() {
                                     type="text"
                                     className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
                                     value={formData.recipient_name}
+                                    placeholder={defaults.recipient_name}
                                     onChange={e => setFormData({ ...formData, recipient_name: e.target.value })}
                                 />
                             </div>
@@ -111,6 +131,7 @@ export default function CreateCardPage() {
                                     rows={4}
                                     className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
                                     value={formData.message}
+                                    placeholder={defaults.message}
                                     onChange={e => setFormData({ ...formData, message: e.target.value })}
                                 />
                             </div>
@@ -120,9 +141,42 @@ export default function CreateCardPage() {
                                     type="text"
                                     className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
                                     value={formData.sender_name}
+                                    placeholder={defaults.sender_name}
                                     onChange={e => setFormData({ ...formData, sender_name: e.target.value })}
                                 />
                             </div>
+
+                            {/* Photo Upload Section */}
+                            {formData.template_id === 'story_photo' && (
+                                <div className="animate-fade-in pt-2">
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-3">Card Photo</label>
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-20 h-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden">
+                                            {formData.photo_url ? (
+                                                <img src={formData.photo_url} alt="Preview" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <ImageIcon className="text-gray-300" size={24} />
+                                            )}
+                                        </div>
+                                        <div className="flex-1">
+                                            <input
+                                                type="file"
+                                                id="photo-upload"
+                                                className="hidden"
+                                                accept="image/*"
+                                                onChange={handlePhotoUpload}
+                                            />
+                                            <label
+                                                htmlFor="photo-upload"
+                                                className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 cursor-pointer transition-all shadow-sm"
+                                            >
+                                                <Plus size={16} /> {formData.photo_url ? 'Change Photo' : 'Upload Photo'}
+                                            </label>
+                                            <p className="text-[10px] text-gray-400 mt-2">Recommended: Portrait orientation (9:16)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -191,12 +245,12 @@ export default function CreateCardPage() {
                                 <div className="h-full flex flex-col justify-center text-center text-white">
                                     <div className="mb-8">
                                         <Sparkles className="w-12 h-12 mx-auto mb-4 opacity-80" />
-                                        <h2 className="text-sm uppercase tracking-widest opacity-80 mb-2">To {formData.recipient_name}</h2>
-                                        <h1 className="text-5xl font-serif font-bold leading-tight mb-8 drop-shadow-sm">{formData.message}</h1>
+                                        <h2 className="text-sm uppercase tracking-widest opacity-80 mb-2">To {formData.recipient_name || defaults.recipient_name}</h2>
+                                        <h1 className="text-5xl font-serif font-bold leading-tight mb-8 drop-shadow-sm">{formData.message || defaults.message}</h1>
                                     </div>
                                     <div className="mt-auto pb-12">
                                         <p className="text-sm opacity-70">Sent with love by</p>
-                                        <p className="font-bold text-lg">{formData.sender_name}</p>
+                                        <p className="font-bold text-lg">{formData.sender_name || defaults.sender_name}</p>
                                     </div>
                                 </div>
                             )}
@@ -207,12 +261,12 @@ export default function CreateCardPage() {
                                     <div className="absolute inset-0 flex items-center justify-center opacity-10">
                                         <div className="w-64 h-64 bg-white rounded-full blur-3xl animate-pulse"></div>
                                     </div>
-                                    <h1 className="text-6xl font-bold mb-6 animate-bounce">{formData.message}</h1>
+                                    <h1 className="text-6xl font-bold mb-6 animate-bounce">{formData.message || defaults.message}</h1>
                                     <div className="bg-white/20 backdrop-blur-md p-6 rounded-2xl border border-white/30 transform -rotate-3">
-                                        <p className="text-xl">For: {formData.recipient_name}</p>
+                                        <p className="text-xl">For: {formData.recipient_name || defaults.recipient_name}</p>
                                     </div>
                                     <div className="absolute bottom-12 text-center w-full">
-                                        <p className="text-sm font-bold bg-white text-gray-900 px-4 py-1 rounded-full inline-block">From {formData.sender_name}</p>
+                                        <p className="text-sm font-bold bg-white text-gray-900 px-4 py-1 rounded-full inline-block">From {formData.sender_name || defaults.sender_name}</p>
                                     </div>
                                 </div>
                             )}
@@ -220,14 +274,33 @@ export default function CreateCardPage() {
                             {/* Template: Photo */}
                             {formData.template_id === 'story_photo' && (
                                 <div className="h-full flex flex-col text-white">
-                                    <div className="h-1/2 bg-black/20 rounded-3xl mb-6 flex items-center justify-center border-2 border-white/30 border-dashed">
-                                        <span className="opacity-70 flex items-center gap-2"><ImageIcon size={18} /> Photo Placeholder</span>
+                                    <div className="relative h-2/3 bg-black/10 rounded-[2rem] mb-8 flex items-center justify-center border-2 border-white/20 overflow-hidden shadow-2xl group cursor-pointer transition-transform hover:scale-[0.98]">
+                                        {formData.photo_url ? (
+                                            <img src={formData.photo_url} alt="Gift" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="flex flex-col items-center gap-3">
+                                                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
+                                                    <Plus size={32} className="text-white" />
+                                                </div>
+                                                <span className="font-bold text-white/70">Upload Your Photo</span>
+                                            </div>
+                                        )}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60"></div>
                                     </div>
-                                    <h1 className="text-4xl font-bold mb-4">{formData.message}</h1>
-                                    <p className="text-xl opacity-90">Dear {formData.recipient_name},</p>
-                                    <div className="mt-auto pb-8">
-                                        <div className="h-px w-full bg-white/30 mb-4"></div>
-                                        <p className="text-right italic text-sm">Love, {formData.sender_name}</p>
+
+                                    <div className="space-y-4 px-2">
+                                        <h1 className="text-4xl font-serif font-bold leading-tight drop-shadow-md">{formData.message || defaults.message}</h1>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-px bg-white/50"></div>
+                                            <p className="text-lg font-medium opacity-90">For {formData.recipient_name || defaults.recipient_name}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-auto pb-8 px-2 flex justify-end items-end">
+                                        <div className="text-right">
+                                            <p className="text-[10px] uppercase tracking-widest opacity-60 mb-1">With Love,</p>
+                                            <p className="text-xl font-bold font-serif">{formData.sender_name || defaults.sender_name}</p>
+                                        </div>
                                     </div>
                                 </div>
                             )}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { LogOut, Plus, Gift, CreditCard, Layout, Loader2, ExternalLink, Trash2, Heart, MessageCircle } from 'lucide-react';
+import { LogOut, Plus, CreditCard, Layout, Loader2, ExternalLink, Trash2, Heart, MessageCircle, ArrowLeft } from 'lucide-react';
 import { GiftSite, GiftCard, GiftSiteResponse } from '../types/gift';
 import Modal from '../components/Modal';
 import Toast from '../components/Toast';
@@ -116,9 +116,9 @@ export default function UserDashboardPage() {
             {/* Header */}
             <header className="bg-white shadow-sm sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                    <Link to="/" className="flex items-center gap-2">
-                        <Gift className="w-8 h-8 text-rose-500" />
-                        <h1 className="text-xl font-bold text-gray-900">My Gifts</h1>
+                    <Link to="/" className="flex items-center gap-2 group">
+                        <ArrowLeft className="w-5 h-5 text-gray-500 group-hover:text-rose-500 transition-colors" />
+                        <h1 className="text-xl font-bold text-gray-900">Back to Home</h1>
                     </Link>
                     <div className="flex items-center gap-4">
                         <span className="text-sm text-gray-600 hidden sm:block">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react'; // Assuming Lucide is available
@@ -11,6 +11,14 @@ export default function AuthPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                navigate('/dashboard', { replace: true });
+            }
+        });
+    }, [navigate]);
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -46,6 +54,7 @@ export default function AuthPage() {
         }
     };
 
+    /*
     const handleGoogleLogin = async () => {
         try {
             const { error } = await supabase.auth.signInWithOAuth({
@@ -59,6 +68,7 @@ export default function AuthPage() {
             setError(err.message);
         }
     };
+    */
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6">

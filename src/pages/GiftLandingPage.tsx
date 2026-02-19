@@ -1,7 +1,22 @@
 import { Link } from 'react-router-dom';
 import { Gift, Smartphone, Layout, ArrowRight, Sparkles, Music, Image as ImageIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
 
 export default function GiftLandingPage() {
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setUser(session?.user ?? null);
+        });
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans">
@@ -15,10 +30,18 @@ export default function GiftLandingPage() {
                         <span className="text-xl font-bold text-gray-900">Digital Gifts</span>
                     </Link>
                     <div className="flex items-center gap-4">
-                        <Link to="/auth" className="text-sm font-medium text-gray-600 hover:text-rose-600 transition-colors">Log In</Link>
-                        <Link to="/auth" className="px-4 py-2 rounded-full bg-rose-500 text-white text-sm font-semibold hover:bg-rose-600 transition-all shadow-md hover:shadow-lg">
-                            Get Started
-                        </Link>
+                        {user ? (
+                            <Link to="/dashboard" className="px-4 py-2 rounded-full bg-rose-500 text-white text-sm font-semibold hover:bg-rose-600 transition-all shadow-md hover:shadow-lg flex items-center gap-2">
+                                <Layout size={16} /> Dashboard
+                            </Link>
+                        ) : (
+                            <>
+                                <Link to="/auth" className="text-sm font-medium text-gray-600 hover:text-rose-600 transition-colors">Log In</Link>
+                                <Link to="/auth" className="px-4 py-2 rounded-full bg-rose-500 text-white text-sm font-semibold hover:bg-rose-600 transition-all shadow-md hover:shadow-lg">
+                                    Get Started
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </nav>
@@ -36,8 +59,8 @@ export default function GiftLandingPage() {
                         Create stunning digital gift sites and story-style cards for Valentine's, Birthdays, and Anniversaries. Personalize with music, photos, and secrets.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link to="/auth" className="px-8 py-4 rounded-xl bg-rose-600 text-white font-bold hover:bg-rose-700 transition-all shadow-xl flex items-center gap-2 transform hover:scale-105">
-                            Start Creating for Free <ArrowRight size={20} />
+                        <Link to={user ? "/dashboard" : "/auth"} className="px-8 py-4 rounded-xl bg-rose-600 text-white font-bold hover:bg-rose-700 transition-all shadow-xl flex items-center gap-2 transform hover:scale-105">
+                            {user ? 'Go to Dashboard' : 'Start Creating for Free'} <ArrowRight size={20} />
                         </Link>
                     </div>
                 </div>

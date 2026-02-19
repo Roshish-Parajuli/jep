@@ -123,18 +123,28 @@ export default function GiftCardViewerPage() {
                         {/* Template: Photo */}
                         {template_id === 'story_photo' && (
                             <div className="h-full flex flex-col text-white">
-                                <div className="h-1/2 bg-black/20 rounded-3xl mb-6 flex items-center justify-center border-2 border-white/30 border-dashed">
+                                <div className="relative h-2/3 bg-black/10 rounded-[2rem] mb-8 flex items-center justify-center border-2 border-white/20 overflow-hidden shadow-2xl">
                                     {content.photo_url ? (
-                                        <img src={content.photo_url} alt="Gift" className="w-full h-full object-cover rounded-3xl" />
+                                        <img src={content.photo_url} alt="Gift" className="w-full h-full object-cover" />
                                     ) : (
                                         <span className="opacity-70 flex items-center gap-2"><ImageIcon size={18} /> Photo</span>
                                     )}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60"></div>
                                 </div>
-                                <h1 className="text-4xl font-bold mb-4">{content.message}</h1>
-                                <p className="text-xl opacity-90">Dear {content.recipient_name},</p>
-                                <div className="mt-auto pb-8">
-                                    <div className="h-px w-full bg-white/30 mb-4"></div>
-                                    <p className="text-right italic text-sm">Love, {content.sender_name}</p>
+
+                                <div className="space-y-4 px-2">
+                                    <h1 className="text-4xl font-serif font-bold leading-tight drop-shadow-md">{content.message}</h1>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-px bg-white/50"></div>
+                                        <p className="text-lg font-medium opacity-90">For {content.recipient_name}</p>
+                                    </div>
+                                </div>
+
+                                <div className="mt-auto pb-8 px-2 flex justify-end items-end">
+                                    <div className="text-right">
+                                        <p className="text-[10px] uppercase tracking-widest opacity-60 mb-1">With Love,</p>
+                                        <p className="text-xl font-bold font-serif">{content.sender_name}</p>
+                                    </div>
                                 </div>
                             </div>
                         )}
