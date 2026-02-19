@@ -24,6 +24,8 @@ const HomePage: React.FC = () => {
   const [user, setUser] = React.useState<any>(null);
 
   React.useEffect(() => {
+    document.title = "Micro-SaaS Hub | Innovative Tools & Solutions";
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
@@ -172,7 +174,7 @@ const HomePage: React.FC = () => {
             The Hub for <span className="text-indigo-600">Secure Micro-SaaS</span>
           </h1>
           <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Discover a curated marketplace of lightweight, powerful SaaS solutions. From lifelong digital gifts to high-security link sharing, we build tools that matter.
+            Discover a curated marketplace of lightweight, powerful SaaS solutions. From productivity boosters to specialized AI tools, we build software that solves real problems.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {user ? (
