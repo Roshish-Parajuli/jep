@@ -258,7 +258,7 @@ const HomePage: React.FC = () => {
                 <ExternalLink size={24} />
               </div>
               <h3 className="text-2xl font-bold">Lifelong Availability</h3>
-              <p className="text-slate-400">Our digital gifts and tools are built to stay. Your memories and data aren't going anywhere—they are here for life.</p>
+              <p className="text-slate-400">Our products and tools are built to stay. Your data and creations aren't going anywhere—they are here for life.</p>
             </div>
             <div className="space-y-4">
               <div className="w-12 h-12 bg-rose-500 rounded-full flex items-center justify-center mx-auto mb-6">
