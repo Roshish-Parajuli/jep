@@ -29,78 +29,90 @@ const ResumeReshaperPage: React.FC = () => {
         setError(null);
         setResult(''); // Clear previous results
 
+        let failedModels: string[] = [];
+
         try {
             const genAI = new GoogleGenerativeAI(apiKey);
 
             const modelsToTry = [
+                "gemini-2.0-flash",
+                "gemini-2.0-flash-exp",
                 "gemini-1.5-flash",
-                "gemini-1.5-flash-latest",
+                "gemini-1.5-flash-8b",
                 "gemini-1.5-pro",
-                "gemini-1.5-pro-latest",
                 "gemini-pro"
             ];
 
             let lastError = null;
             let finalResult = null;
-            const failedModels: string[] = [];
 
             const prompt = `
-                Act as a professional resume writer and career coach. 
-                I am going to provide you with my current resume content and a job description for a role I am applying for.
-                
-                Your task is to reshape and optimize the resume to highlight the most relevant skills, experiences, and keywords found in the job description.
-                
-                Guidelines:
-                1. Keep the professional tone.
-                2. Use strong action verbs.
-                3. Quantify achievements where possible based on the provided text.
-                4. Focus on the MUST-HAVE skills from the job description.
-                5. Output the reshaped resume in a clean, professional markdown format that is ready to be copied.
-                
-                ---
-                CURRENT RESUME:
-                ${resume}
-                
-                ---
-                JOB DESCRIPTION:
-                ${jobDescription}
-                ---
-            `;
+        Act as a Senior Executive Resume Writer with 20+ years of experience in ATS optimization and high-stakes recruitment. 
+        Your goal is to transform the provided Resume into a high-impact, results-driven document tailored specifically for the provided Job Description.
 
-            for (const modelName of modelsToTry) {
-                try {
-                    console.log(`Starting generation with model: ${modelName}`);
-                    const model = genAI.getGenerativeModel({ model: modelName });
-                    const result = await model.generateContent(prompt);
-                    const response = await result.response;
-                    const text = response.text();
+        STRATEGY:
+        1. ANALYZE: Identify the top 5 most critical responsibilities and skills in the Job Description.
+        2. ADAPT: Rewrite the Professional Summary to hook the recruiter within 6 seconds.
+        3. OPTIMIZE: Naturally integrate high-priority keywords to ensure 100% ATS compatibility.
+        4. ENHANCE: Use the STAR method (Situation, Task, Action, Result) for every bullet point. Quantify results using metrics (%, $, time).
+        5. STANDARDIZE: Use powerful action verbs (e.g., "Spearheaded", "Orchestrated", "Surpassed") and eliminate weak/passive language.
 
-                    if (text) {
-                        console.log(`Successfully generated content using ${modelName}`);
-                        finalResult = text;
-                        break;
+        CONSTRAINTS:
+        - Do NOT fabricate experiences; only reshape existing ones to fit the context.
+        - Ensure the output is in clean Markdown, using H1 for the name and clear H2/H3 for sections.
+        - Focus on "Impact" over "Tasks". Tell me what the applicant ACHIEVED, not just what they did.
+
+        ---
+        CURRENT RESUME:
+        ${resume}
+        
+        ---
+        JOB DESCRIPTION:
+        ${jobDescription}
+        ---
+      `;
+
+            for (const baseModelName of modelsToTry) {
+                // Try both with and without "models/" prefix
+                const modelVariations = [baseModelName, `models/${baseModelName}`];
+
+                for (const modelName of modelVariations) {
+                    try {
+                        console.log(`Attempting generation with: ${modelName}`);
+                        const model = genAI.getGenerativeModel({ model: modelName });
+                        const result = await model.generateContent(prompt);
+                        const response = await result.response;
+                        const text = response.text();
+
+                        if (text) {
+                            console.log(`Success! Result generated using: ${modelName}`);
+                            finalResult = text;
+                            break;
+                        }
+                    } catch (err: any) {
+                        console.warn(`Attempt failed for ${modelName}:`, err.message);
+                        if (!failedModels.includes(baseModelName)) {
+                            failedModels.push(baseModelName);
+                        }
+                        lastError = err;
+
+                        // Critical auth errors - stop trying
+                        if (err.message?.includes('403') || err.message?.includes('401') || err.message?.includes('API_KEY_INVALID')) {
+                            throw err;
+                        }
+                        // For 404, we try the next variation or next model
+                        continue;
                     }
-                } catch (err: any) {
-                    console.warn(`Model ${modelName} failed:`, err.message);
-                    failedModels.push(modelName);
-                    lastError = err;
-
-                    // If it's a critical auth/permission error, stop trying other models
-                    if (err.message?.includes('403') || err.message?.includes('401') || err.message?.includes('API_KEY_INVALID')) {
-                        break;
-                    }
-                    // Otherwise (like 404 or 429), try the next model
-                    continue;
                 }
+                if (finalResult) break;
             }
 
             if (finalResult) {
                 setResult(finalResult);
             } else if (lastError) {
-                // If we attempted models but all failed, throw the last error to be handled by the outer catch
                 throw lastError;
             } else {
-                throw new Error('No compatible Gemini model was found for your API key.');
+                throw new Error('No compatible Gemini model response received.');
             }
         } catch (err: any) {
             console.error('Final Gemini API Error:', err);
@@ -110,13 +122,13 @@ const ResumeReshaperPage: React.FC = () => {
             if (err.message?.includes('404')) {
                 userMessage += `None of the attempted models were found/supported for this API key. Please ensure your project has the 'Generative Language API' enabled in Google AI Studio.`;
             } else if (err.message?.includes('429')) {
-                userMessage += 'Too many requests (Rate limit reached). Please wait a minute and try again.';
-            } else if (err.message?.includes('403') || err.message?.includes('401')) {
-                userMessage += 'Authentication failed. Please check if your API key is correct and assigned to a project with Gemini access.';
+                userMessage += 'Rate limit reached. If you are using a free tier, there are limits on requests per minute. Try again in 60 seconds.';
+            } else if (err.message?.includes('403') || err.message?.includes('401') || err.message?.includes('API_KEY_INVALID')) {
+                userMessage += 'API Key is invalid or restricted. Please double-check your VITE_GEMINI_API_KEY in the .env file and restart your development server.';
             } else if (err.message?.includes('SAFETY')) {
-                userMessage += 'Content flagged by safety filters. Please use professional language.';
+                userMessage += 'The generation was blocked for safety reasons. Please ensure your resume and job description use professional language.';
             } else {
-                userMessage += err.message || 'An unexpected error occurred.';
+                userMessage += err.message || 'An unexpected error occurred during AI generation.';
             }
 
             setError(userMessage);
