@@ -52,7 +52,15 @@ const HomePage: React.FC = () => {
       icon: <FileText className="text-emerald-500" size={32} />,
       link: "/resume-reshaper",
       color: "from-emerald-500 to-teal-500",
-      tag: "Live Now"
+      tag: "AI Tool"
+    },
+    {
+      title: "Premium Resume Builder",
+      description: "Create a professional, high-impact resume in minutes with our interactive builder. Real-time preview and instant download.",
+      icon: <FileText className="text-indigo-500" size={32} />,
+      link: "/resume-builder",
+      color: "from-indigo-500 to-violet-500",
+      tag: "Essential"
     },
     /*
     {

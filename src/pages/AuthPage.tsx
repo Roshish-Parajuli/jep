@@ -44,8 +44,10 @@ export default function AuthPage() {
                     },
                 });
                 if (error) throw error;
-                // Check if email confirmation is required specific to project, assuming auto-login or prompt
-                navigate('/dashboard');
+                setError("Signup successful! Please check your email (including spam folder) to confirm your account.");
+                // Clear the form
+                setEmail('');
+                setPassword('');
             }
         } catch (err: any) {
             setError(err.message);
@@ -86,8 +88,12 @@ export default function AuthPage() {
                     </div>
 
                     {error && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-6 text-sm flex items-center">
-                            <span className="mr-2">⚠️</span> {error}
+                        <div className={`p-4 rounded-xl mb-6 text-sm flex items-start gap-3 ${error.includes('successful')
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                                : 'bg-red-50 text-red-600 border border-red-100'
+                            }`}>
+                            <span className="mt-0.5">{error.includes('successful') ? '✅' : '⚠️'}</span>
+                            <p>{error}</p>
                         </div>
                     )}
 

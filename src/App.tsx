@@ -14,6 +14,7 @@ import CreateSitePage from './pages/CreateSitePage';
 import CreateCardPage from './pages/CreateCardPage';
 import GiftLandingPage from './pages/GiftLandingPage';
 import GiftCardViewerPage from './pages/GiftCardViewerPage';
+import ResumeBuilderPage from './pages/ResumeBuilderPage';
 import { UserProtectedRoute } from './components/Auth/UserProtectedRoute';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -54,6 +55,7 @@ function App() {
         />
         <Route path="/pdf-to-text" element={<PdfToTextConverterPage />} />
         <Route path="/resume-reshaper" element={<ResumeReshaperPage />} />
+        <Route path="/resume-builder" element={<ResumeBuilderPage />} />
 
         <Route path="/cards/:id" element={<GiftCardViewerPage />} />
 
