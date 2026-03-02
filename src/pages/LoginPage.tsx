@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Heart, Eye, EyeOff, Lock } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Lock } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -49,11 +49,18 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-100 via-pink-50 to-red-100 flex items-center justify-center">
-      <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg text-center">
-        <Heart className="w-12 h-12 text-rose-500 mx-auto mb-4" fill="currentColor" />
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Admin Access</h1>
-        <p className="text-gray-500 mb-6">Sign in to manage Digital Gift pages and other SaaS products.</p>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-slate-50 to-violet-50 flex items-center justify-center font-sans">
+      <div className="max-w-md w-full bg-white p-10 rounded-3xl shadow-xl text-center border border-slate-100">
+        <div className="w-16 h-16 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+          <Lock className="text-white" size={32} />
+        </div>
+        <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600 mb-2">
+          micro-saas.online
+        </h1>
+        <p className="text-slate-500 mb-8 font-medium italic">Admin Portal Access</p>
+        <p className="text-slate-400 text-sm mb-8 leading-relaxed">
+          Secure access to manage the digital gift ecosystem and SaaS marketplace catalog.
+        </p>
         <form onSubmit={handleLogin}>
           <input
             type="email"

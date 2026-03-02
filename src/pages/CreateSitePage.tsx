@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { ArrowLeft, Heart, Cake, Calendar, ChevronRight, Loader2, Sparkles, Zap } from 'lucide-react';
 import { GiftTemplateType } from '../types/gift';
@@ -51,10 +51,12 @@ const templates: TemplateOption[] = [
 ];
 
 export default function CreateSitePage() {
+    const { id } = useParams();
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [selectedTemplate, setSelectedTemplate] = useState<GiftTemplateType | null>(null);
     const [loading, setLoading] = useState(false);
+    const [pageLoading, setPageLoading] = useState(!!id);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -63,6 +65,40 @@ export default function CreateSitePage() {
         hero_subtext: '',
         slug: '',
     });
+
+    useEffect(() => {
+        if (id) {
+            fetchSite();
+        }
+    }, [id]);
+
+    const fetchSite = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('gift_sites')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (error) throw error;
+            if (data) {
+                setFormData({
+                    recipient_name: data.content.recipient_name,
+                    hero_headline: data.content.hero_headline,
+                    hero_subtext: data.content.hero_subtext,
+                    slug: data.slug,
+                });
+                setSelectedTemplate(data.template_type);
+                setStep(2);
+            }
+        } catch (err) {
+            console.error('Error fetching site:', err);
+            alert('Failed to load site data.');
+            navigate('/dashboard');
+        } finally {
+            setPageLoading(false);
+        }
+    };
 
     const handleNext = () => {
         if (step === 1 && selectedTemplate) setStep(2);
@@ -79,35 +115,69 @@ export default function CreateSitePage() {
             // Generate a unique slug if not provided or clean up provided one
             const slug = formData.slug.trim() || `gift-${Math.random().toString(36).substring(7)}`;
 
-            const { error } = await supabase.from('gift_sites').insert({
-                user_id: user.id,
-                slug: slug,
-                template_type: selectedTemplate,
-                is_published: true,
-                content: {
-                    recipient_name: formData.recipient_name,
-                    hero_headline: formData.hero_headline,
-                    hero_subtext: formData.hero_subtext,
-                    // Add default content based on template
-                    secret_message: "I have a secret...",
-                    secret_code: "1234",
-                    promises: ["To always be there", "To make you smile"],
-                    timeline: [],
-                    love_letter: "Write your letter here...",
-                    final_message: "You are my everything."
-                }
-            });
+            if (id) {
+                // Update existing site
+                const { error } = await supabase
+                    .from('gift_sites')
+                    .update({
+                        slug: slug,
+                        template_type: selectedTemplate,
+                        content: {
+                            recipient_name: formData.recipient_name,
+                            hero_headline: formData.hero_headline,
+                            hero_subtext: formData.hero_subtext,
+                            // Keep existing content fields
+                            secret_message: "I have a secret...",
+                            secret_code: "1234",
+                            promises: ["To always be there", "To make you smile"],
+                            timeline: [],
+                            love_letter: "Write your letter here...",
+                            final_message: "You are my everything."
+                        },
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', id);
 
-            if (error) throw error;
+                if (error) throw error;
+            } else {
+                // Insert new site
+                const { error } = await supabase.from('gift_sites').insert({
+                    user_id: user.id,
+                    slug: slug,
+                    template_type: selectedTemplate,
+                    is_published: true,
+                    content: {
+                        recipient_name: formData.recipient_name,
+                        hero_headline: formData.hero_headline,
+                        hero_subtext: formData.hero_subtext,
+                        secret_message: "I have a secret...",
+                        secret_code: "1234",
+                        promises: ["To always be there", "To make you smile"],
+                        timeline: [],
+                        love_letter: "Write your letter here...",
+                        final_message: "You are my everything."
+                    }
+                });
+
+                if (error) throw error;
+            }
 
             navigate('/dashboard');
         } catch (err) {
             console.error(err);
-            alert('Failed to create site. Please try again.');
+            alert(`Failed to ${id ? 'update' : 'create'} site. Please try again.`);
         } finally {
             setLoading(false);
         }
     };
+
+    if (pageLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -132,7 +202,7 @@ export default function CreateSitePage() {
                 {/* Step 1: Template Selection */}
                 {step === 1 && (
                     <div className="animate-fade-in">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Choose a Template</h1>
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">{id ? 'Change Template' : 'Choose a Template'}</h1>
                         <p className="text-gray-500 mb-2">Select a style for your gift site.</p>
 
                         {/* Template Guide */}
@@ -202,7 +272,7 @@ export default function CreateSitePage() {
                 {/* Step 2: Basic Details */}
                 {step === 2 && (
                     <div className="animate-fade-in">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Customize Details</h1>
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">{id ? 'Update Details' : 'Customize Details'}</h1>
                         <p className="text-gray-500 mb-8">Let's start with the basics.</p>
 
                         <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 space-y-6">
@@ -262,7 +332,7 @@ export default function CreateSitePage() {
                                 disabled={loading || !formData.recipient_name}
                                 className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all min-w-[140px] justify-center"
                             >
-                                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Create Site'}
+                                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (id ? 'Save Changes' : 'Create Site')}
                             </button>
                         </div>
                     </div>

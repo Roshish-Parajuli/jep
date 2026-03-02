@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { LogOut, Plus, CreditCard, Layout, Loader2, ExternalLink, Trash2, Heart, MessageCircle, ArrowLeft } from 'lucide-react';
+import { LogOut, Plus, CreditCard, Layout, Loader2, ExternalLink, Trash2, Heart, MessageCircle, ArrowLeft, Pencil, Sparkles } from 'lucide-react';
 import { GiftSite, GiftCard, GiftSiteResponse } from '../types/gift';
 import Modal from '../components/Modal';
 import Toast from '../components/Toast';
@@ -11,11 +11,12 @@ export default function UserDashboardPage() {
     const [user, setUser] = useState<any>(null);
     const [sites, setSites] = useState<GiftSite[]>([]);
     const [cards, setCards] = useState<GiftCard[]>([]);
+    const [quizzes, setQuizzes] = useState<any[]>([]);
     const [responses, setResponses] = useState<Record<string, GiftSiteResponse[]>>({});
     const [loading, setLoading] = useState(true);
 
     // Modal states
-    const [modal, setModal] = useState<{ isOpen: boolean; type: 'deleteSite' | 'deleteCard' | null; itemId: string | null }>({ isOpen: false, type: null, itemId: null });
+    const [modal, setModal] = useState<{ isOpen: boolean; type: 'deleteSite' | 'deleteCard' | 'deleteQuiz' | null; itemId: string | null }>({ isOpen: false, type: null, itemId: null });
     const [toast, setToast] = useState<{ isVisible: boolean; message: string; type: 'success' | 'error' }>({ isVisible: false, message: '', type: 'success' });
 
     useEffect(() => {
@@ -40,6 +41,14 @@ export default function UserDashboardPage() {
                         .eq('user_id', user.id)
                         .order('created_at', { ascending: false });
                     setCards(cardsData || []);
+
+                    // Fetch Quizzes
+                    const { data: quizzesData } = await supabase
+                        .from('couples_quizzes')
+                        .select('*')
+                        .eq('creator_id', user.id)
+                        .order('created_at', { ascending: false });
+                    setQuizzes(quizzesData || []);
 
                     // Fetch Responses for all sites
                     if (sitesData && sitesData.length > 0) {
@@ -107,6 +116,22 @@ export default function UserDashboardPage() {
         }
     };
 
+    const handleDeleteQuiz = async (id: string) => {
+        setModal({ isOpen: true, type: 'deleteQuiz', itemId: id });
+    };
+
+    const confirmDeleteQuiz = async () => {
+        if (!modal.itemId) return;
+        try {
+            await supabase.from('couples_quizzes').delete().eq('id', modal.itemId);
+            setQuizzes(quizzes.filter(q => q.id !== modal.itemId));
+            setToast({ isVisible: true, message: 'Chemistry test deleted successfully!', type: 'success' });
+        } catch (e) {
+            console.error(e);
+            setToast({ isVisible: true, message: 'Failed to delete chemistry test', type: 'error' });
+        }
+    };
+
     if (loading) {
         return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-indigo-600" /></div>;
     }
@@ -118,7 +143,7 @@ export default function UserDashboardPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
                     <Link to="/" className="flex items-center gap-2 group">
                         <ArrowLeft className="w-5 h-5 text-gray-500 group-hover:text-rose-500 transition-colors" />
-                        <h1 className="text-xl font-bold text-gray-900">Back to Home</h1>
+                        <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">micro-saas.online</h1>
                     </Link>
                     <div className="flex items-center gap-4">
                         <span className="text-sm text-gray-600 hidden sm:block">
@@ -199,6 +224,23 @@ export default function UserDashboardPage() {
                             <Plus className="w-6 h-6" />
                         </div>
                     </div>
+
+                    {/* Create Chemistry Test */}
+                    <div
+                        onClick={() => navigate('/quiz/new')}
+                        className="group bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-6 text-white shadow-lg cursor-pointer transform transition-all hover:scale-[1.02] hover:shadow-xl relative overflow-hidden"
+                    >
+                        <div className="absolute right-0 top-0 opacity-10 transform translate-x-8 -translate-y-8">
+                            <Sparkles className="w-48 h-48" />
+                        </div>
+                        <h2 className="text-2xl font-bold mb-2">Create Chemistry Test</h2>
+                        <p className="text-indigo-100 mb-6 max-w-xs">
+                            How well do you know your partner? Create a viral compatibility quiz.
+                        </p>
+                        <div className="bg-white/20 backdrop-blur-sm w-fit p-3 rounded-full group-hover:bg-white/30 transition-colors">
+                            <Plus className="w-6 h-6" />
+                        </div>
+                    </div>
                 </div>
 
                 {/* Your Creations */}
@@ -226,7 +268,7 @@ export default function UserDashboardPage() {
                                     return (
                                         <div key={site.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
                                             <div className="flex items-start justify-between mb-2">
-                                                <h3 className="text-lg font-bold text-gray-900">{site.content.hero_headline || 'Untitled Site'}</h3>
+                                                <h3 className="text-lg font-bold text-gray-900">{site.content?.hero_headline || 'Untitled Site'}</h3>
                                                 {hasResponses && (
                                                     <span className="bg-rose-100 text-rose-700 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
                                                         <Heart size={12} />
@@ -234,7 +276,7 @@ export default function UserDashboardPage() {
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="text-sm text-gray-500 mb-2">To: {site.content.recipient_name || 'Someone Special'}</p>
+                                            <p className="text-sm text-gray-500 mb-2">To: {site.content?.recipient_name || 'Someone Special'}</p>
 
                                             {/* Response Summary */}
                                             {hasResponses && (
@@ -273,12 +315,22 @@ export default function UserDashboardPage() {
                                                 >
                                                     View Site <ExternalLink size={14} />
                                                 </Link>
-                                                <button
-                                                    onClick={() => handleDeleteSite(site.id)}
-                                                    className="text-gray-400 hover:text-red-500 transition-colors"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
+                                                <div className="flex items-center gap-3">
+                                                    <Link
+                                                        to={`/edit/site/${site.id}`}
+                                                        className="text-gray-400 hover:text-indigo-600 transition-colors"
+                                                        title="Edit Site"
+                                                    >
+                                                        <Pencil size={16} />
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => handleDeleteSite(site.id)}
+                                                        className="text-gray-400 hover:text-red-500 transition-colors"
+                                                        title="Delete Site"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     );
@@ -301,8 +353,8 @@ export default function UserDashboardPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {cards.map(card => (
                                     <div key={card.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                                        <h3 className="text-lg font-bold text-gray-900 mb-1">{card.content.message?.substring(0, 20)}...</h3>
-                                        <p className="text-sm text-gray-500 mb-4">To: {card.content.recipient_name || 'Friend'}</p>
+                                        <h3 className="text-lg font-bold text-gray-900 mb-1">{card.content?.message?.substring(0, 20)}...</h3>
+                                        <p className="text-sm text-gray-500 mb-4">To: {card.content?.recipient_name || 'Friend'}</p>
                                         <div className="flex items-center justify-between mt-4 border-t border-gray-100 pt-4">
                                             <Link
                                                 to={`/cards/${card.id}`}
@@ -311,12 +363,62 @@ export default function UserDashboardPage() {
                                             >
                                                 View Card <ExternalLink size={14} />
                                             </Link>
-                                            <button
-                                                onClick={() => handleDeleteCard(card.id)}
-                                                className="text-gray-400 hover:text-red-500 transition-colors"
+                                            <div className="flex items-center gap-3">
+                                                <Link
+                                                    to={`/edit/card/${card.id}`}
+                                                    className="text-gray-400 hover:text-indigo-600 transition-colors"
+                                                    title="Edit Card"
+                                                >
+                                                    <Pencil size={16} />
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDeleteCard(card.id)}
+                                                    className="text-gray-400 hover:text-red-500 transition-colors"
+                                                    title="Delete Card"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </section>
+
+                    {/* Quizzes Section */}
+                    <section>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                            <Sparkles className="text-indigo-500" /> Your Chemistry Tests
+                        </h2>
+
+                        {quizzes.length === 0 ? (
+                            <div className="text-center py-12 bg-white rounded-2xl border-2 border-dashed border-gray-200">
+                                <p className="text-gray-500">You haven't created any chemistry tests yet.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {quizzes.map(quiz => (
+                                    <div key={quiz.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                                        <h3 className="text-lg font-bold text-gray-900 mb-1">Couple Sync Test</h3>
+                                        <p className="text-sm text-gray-500 mb-4">Slug: /{quiz.slug}</p>
+                                        <div className="flex items-center justify-between mt-4 border-t border-gray-100 pt-4">
+                                            <Link
+                                                to={`/quiz/${quiz.slug}`}
+                                                target="_blank"
+                                                className="text-indigo-600 font-medium text-sm flex items-center gap-1 hover:underline"
                                             >
-                                                <Trash2 size={16} />
-                                            </button>
+                                                View Result <ExternalLink size={14} />
+                                            </Link>
+                                            <div className="flex items-center gap-3">
+                                                <button
+                                                    onClick={() => handleDeleteQuiz(quiz.id)}
+                                                    className="text-gray-400 hover:text-red-500 transition-colors"
+                                                    title="Delete Quiz"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
@@ -332,11 +434,23 @@ export default function UserDashboardPage() {
             <Modal
                 isOpen={modal.isOpen}
                 onClose={() => setModal({ isOpen: false, type: null, itemId: null })}
-                onConfirm={modal.type === 'deleteSite' ? confirmDeleteSite : confirmDeleteCard}
-                title={modal.type === 'deleteSite' ? 'Delete Gift Site?' : 'Delete Digital Card?'}
-                message={modal.type === 'deleteSite'
-                    ? 'This will permanently delete your gift site and all its content. This action cannot be undone.'
-                    : 'This will permanently delete your digital card. This action cannot be undone.'}
+                onConfirm={
+                    modal.type === 'deleteSite' ? confirmDeleteSite :
+                        modal.type === 'deleteCard' ? confirmDeleteCard :
+                            confirmDeleteQuiz
+                }
+                title={
+                    modal.type === 'deleteSite' ? 'Delete Gift Site?' :
+                        modal.type === 'deleteCard' ? 'Delete Digital Card?' :
+                            'Delete Chemistry Test?'
+                }
+                message={
+                    modal.type === 'deleteSite'
+                        ? 'This will permanently delete your gift site and all its content. This action cannot be undone.'
+                        : modal.type === 'deleteCard'
+                            ? 'This will permanently delete your digital card. This action cannot be undone.'
+                            : 'This will permanently delete your chemistry test quiz. This action cannot be undone.'
+                }
                 type="alert"
                 confirmText="Delete"
                 cancelText="Cancel"

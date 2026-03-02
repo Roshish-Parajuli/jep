@@ -77,6 +77,12 @@ export default function AuthPage() {
             <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden border border-purple-100">
                 <div className="p-8">
                     <div className="text-center mb-8">
+                        <div className="flex justify-center mb-4">
+                            <div className="w-12 h-12 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                                M
+                            </div>
+                        </div>
+                        <h2 className="text-sm font-bold text-indigo-600 uppercase tracking-widest mb-2">micro-saas.online</h2>
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
                             {isLogin ? 'Welcome Back' : 'Create Account'}
                         </h1>
@@ -89,8 +95,8 @@ export default function AuthPage() {
 
                     {error && (
                         <div className={`p-4 rounded-xl mb-6 text-sm flex items-start gap-3 ${error.includes('successful')
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                                : 'bg-red-50 text-red-600 border border-red-100'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                            : 'bg-red-50 text-red-600 border border-red-100'
                             }`}>
                             <span className="mt-0.5">{error.includes('successful') ? '✅' : '⚠️'}</span>
                             <p>{error}</p>

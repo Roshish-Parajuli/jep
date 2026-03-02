@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, FileText, PlusCircle, ExternalLink, Mail, ArrowRight, Layout } from 'lucide-react';
+import { Heart, FileText, PlusCircle, ExternalLink, Mail, ArrowRight, Layout, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 const FloatingParticles: React.FC = () => (
@@ -24,7 +24,7 @@ const HomePage: React.FC = () => {
   const [user, setUser] = React.useState<any>(null);
 
   React.useEffect(() => {
-    document.title = "Micro-SaaS Hub | Innovative Tools & Solutions";
+    document.title = "micro-saas.online";
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -42,108 +42,26 @@ const HomePage: React.FC = () => {
       title: "Digital Gift Experience",
       description: "Create personalized, interactive digital gift experiences for your loved ones with photos, music, and secret messages. A gift that stays forever.",
       icon: <Heart className="text-rose-500" size={32} />,
-      link: "/gifts", // Updated to point to new landing page
+      link: "/gifts",
       color: "from-rose-500 to-pink-500",
       tag: "Popular"
     },
     {
-      title: "Resume Reshaper",
-      description: "Generate an updated resume to match the job description, just paste the job description and your resume and we will generate a resume that matches the job description.",
-      icon: <FileText className="text-emerald-500" size={32} />,
-      link: "/resume-reshaper",
-      color: "from-emerald-500 to-teal-500",
-      tag: "AI Tool"
+      title: "Couples Compatibility Quiz",
+      description: "Test your chemistry with your partner! Answer fun questions and get a real-time compatibility score to share with your loved one.",
+      icon: <Sparkles className="text-indigo-500" size={32} />,
+      link: "/quiz/new",
+      color: "from-indigo-500 to-purple-500",
+      tag: "New & Fun"
     },
     {
       title: "Premium Resume Builder",
       description: "Create a professional, high-impact resume in minutes with our interactive builder. Real-time preview and instant download.",
-      icon: <FileText className="text-indigo-500" size={32} />,
+      icon: <FileText className="text-emerald-500" size={32} />,
       link: "/resume-builder",
-      color: "from-indigo-500 to-violet-500",
-      tag: "Essential"
-    },
-    /*
-    {
-      title: "PDF to Text Converter",
-      description: "Quickly convert complex PDF documents into clean, editable text files using our advanced parsing engine.",
-      icon: <FileText className="text-blue-500" size={32} />,
-      link: "/pdf-to-text",
-      color: "from-blue-500 to-indigo-500",
-      tag: "Free Tool"
-    },
-    {
-      title: "Daily Affirmation AI",
-      description: "Receive personalized, AI-generated daily motivation and affirmations tailored to your goals and mood.",
-      icon: <Sparkles className="text-amber-500" size={32} />,
-      link: "/coming-soon",
-      color: "from-amber-500 to-orange-500",
-      tag: "New"
-    },
-    {
-      title: "Snippet Secure",
-      description: "An ultra-private, encrypted vault for your code snippets and sensitive configuration files. Zero-knowledge storage.",
-      icon: <Lock className="text-slate-700" size={32} />,
-      link: "/coming-soon",
-      color: "from-slate-700 to-slate-900",
-      tag: "Secure"
-    },
-    {
-      title: "Mood Tracker for Pairs",
-      description: "A private space for couples to track their emotional health together with AI-driven relationship insights.",
-      icon: <Smile className="text-pink-400" size={32} />,
-      link: "/coming-soon",
-      color: "from-pink-400 to-rose-400",
-      tag: "Relationship"
-    },
-    {
-      title: "SEO Audit Pro",
-      description: "One-click SEO health checks for your micro-apps. Get actionable insights to rank higher in search results.",
-      icon: <Search className="text-blue-600" size={32} />,
-      link: "/coming-soon",
-      color: "from-blue-600 to-cyan-600",
-      tag: "Utilities"
-    },
-    {
-      title: "Mini-SaaS Boilerplate",
-      description: "A complete, production-ready starter kit to launch your own Micro-SaaS in minutes. Frontend + Backend.",
-      icon: <Code className="text-violet-600" size={32} />,
-      link: "/coming-soon",
-      color: "from-violet-600 to-purple-600",
-      tag: "Builder Tool"
-    },
-    {
-      title: "Dream Journal AI",
-      description: "Record your dreams and get AI-powered psychological insights and pattern analysis. Discover your subconscious.",
-      icon: <Moon className="text-indigo-400" size={32} />,
-      link: "/coming-soon",
-      color: "from-indigo-400 to-purple-500",
-      tag: "Personal"
-    },
-    {
-      title: "Subscription Tracker",
-      description: "Manage all your digital subscriptions in one place. Get alerts before renewals and save money effortlessly.",
-      icon: <CreditCard className="text-emerald-400" size={32} />,
-      link: "/coming-soon",
-      color: "from-emerald-400 to-green-500",
-      tag: "Finance"
-    },
-    {
-      title: "Focus Flow",
-      description: "A minimalist, AI-enhanced Pomodoro timer designed for deep work. Syncs with your productivity goals.",
-      icon: <Clock className="text-orange-400" size={32} />,
-      link: "/coming-soon",
-      color: "from-orange-400 to-red-400",
-      tag: "Productivity"
-    },
-    {
-      title: "Secure Privacy Vault",
-      description: "Generate highly secure, encrypted links to share sensitive information or documents that only exist for those with the link.",
-      icon: <PlusCircle className="text-emerald-500" size={32} />,
-      link: "/coming-soon",
       color: "from-emerald-500 to-teal-500",
-      tag: "Coming Soon"
+      tag: "Career"
     }
-    */
   ];
 
   return (
@@ -182,7 +100,7 @@ const HomePage: React.FC = () => {
             The Hub for <span className="text-indigo-600">Secure Micro-SaaS</span>
           </h1>
           <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Discover a curated marketplace of lightweight, powerful SaaS solutions. From productivity boosters to specialized AI tools, we build software that solves real problems.
+            Discover a curated marketplace of lightweight, powerful SaaS solutions. From productivity boosters to specialized digital tools, we build software that solves real problems.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {user ? (
