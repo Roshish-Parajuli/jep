@@ -42,10 +42,9 @@ export default function UserDashboardPage() {
                         .order('created_at', { ascending: false });
                     setCards(cardsData || []);
 
-                    // Fetch Quizzes
                     const { data: quizzesData } = await supabase
                         .from('couples_quizzes')
-                        .select('*')
+                        .select('id, slug, questions, creator_answers, partner_answers, score, created_at')
                         .eq('creator_id', user.id)
                         .order('created_at', { ascending: false });
                     setQuizzes(quizzesData || []);

@@ -46,7 +46,7 @@ export default function AdminDashboardPage() {
       // Fetch Quizzes
       const { data: quizzesData, error: quizzesError } = await supabase
         .from('couples_quizzes')
-        .select('*')
+        .select('id, slug, questions, creator_answers, partner_answers, score, created_at')
         .order('created_at', { ascending: false });
 
       if (quizzesError) throw quizzesError;

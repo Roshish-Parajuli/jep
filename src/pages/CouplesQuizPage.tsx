@@ -20,7 +20,8 @@ const defaultQuestions: Question[] = [
 export default function CouplesQuizPage() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [step, setStep] = useState<'start' | 'answering' | 'waiting' | 'results'>('start');
+    const [step, setStep] = useState<'start' | 'answering' | 'waiting' | 'results' | 'error'>('start');
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState<Record<number, string>>({});
     const [creatorAnswers, setCreatorAnswers] = useState<Record<number, string> | null>(null);
@@ -42,7 +43,7 @@ export default function CouplesQuizPage() {
             setLoading(true);
             const { data, error } = await supabase
                 .from('couples_quizzes')
-                .select('*')
+                .select('id, slug, questions, creator_answers, partner_answers, score')
                 .eq('slug', id)
                 .single();
 
@@ -104,7 +105,8 @@ export default function CouplesQuizPage() {
             setStep('results');
         } catch (err: any) {
             console.error('Error saving quiz:', err);
-            alert(`Failed to save quiz: ${err.message || "Please try again."}`);
+            setErrorMessage(err.message || "We couldn't save your quiz results. This usually happens if the database schema is being updated.");
+            setStep('error');
         } finally {
             setLoading(false);
         }
@@ -137,7 +139,8 @@ export default function CouplesQuizPage() {
             setStep('results');
         } catch (err: any) {
             console.error('Error saving partner results:', err);
-            alert(`Failed to save results: ${err.message || "Please try again."}`);
+            setErrorMessage(err.message || "We couldn't match your hearts. Double-check your connection and try again!");
+            setStep('error');
         } finally {
             setLoading(false);
         }
@@ -327,6 +330,42 @@ export default function CouplesQuizPage() {
                                     className="w-full py-4 bg-white border-2 border-gray-200 text-gray-700 rounded-2xl font-bold hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
                                 >
                                     Back to Dashboard
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {step === 'error' && (
+                        <div className="text-center animate-fade-in py-8">
+                            <div className="w-20 h-20 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto mb-6 rotate-[-6deg] shadow-inner">
+                                <RefreshCw className="text-rose-400 w-10 h-10" />
+                            </div>
+                            <h2 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">Hearts Disconnected</h2>
+                            <p className="text-gray-600 mb-8 leading-relaxed">
+                                {errorMessage}
+                            </p>
+
+                            <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 mb-8 text-left">
+                                <p className="text-xs text-amber-800 font-bold uppercase mb-1 flex items-center gap-1">
+                                    <Sparkles size={12} /> Pro Tip
+                                </p>
+                                <p className="text-xs text-amber-700 leading-tight">
+                                    If you just updated the database, try refreshing the page or waiting a few seconds for the connection to stabilize.
+                                </p>
+                            </div>
+
+                            <div className="space-y-3">
+                                <button
+                                    onClick={() => window.location.reload()}
+                                    className="w-full py-4 bg-gradient-to-r from-rose-500 to-rose-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:from-rose-600 hover:to-rose-700 transition-all shadow-lg"
+                                >
+                                    <RefreshCw size={18} /> Try Again
+                                </button>
+                                <button
+                                    onClick={() => navigate('/')}
+                                    className="w-full py-4 bg-white border-2 border-gray-100 text-gray-500 rounded-2xl font-bold hover:bg-gray-50 transition-all"
+                                >
+                                    Back to Home
                                 </button>
                             </div>
                         </div>
