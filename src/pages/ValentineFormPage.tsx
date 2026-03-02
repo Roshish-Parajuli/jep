@@ -167,7 +167,7 @@ const ValentineFormPage: React.FC<ValentineFormPageProps> = ({ pageData, onBack 
         }
       }
 
-      const url = `${window.location.origin}/valentine/${slug}`;
+      const url = `${window.location.origin}/#/valentine/${slug}`;
       setGeneratedUrl(url);
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error occurred';

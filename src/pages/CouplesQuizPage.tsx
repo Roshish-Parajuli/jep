@@ -119,7 +119,7 @@ export default function CouplesQuizPage() {
     };
 
     const shareQuiz = () => {
-        const url = `${window.location.origin}/quiz/${quizSlug}`;
+        const url = `${window.location.origin}/#/quiz/${quizSlug}`;
         navigator.clipboard.writeText(url);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
