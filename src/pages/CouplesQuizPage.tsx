@@ -23,10 +23,11 @@ export default function CouplesQuizPage() {
     const [step, setStep] = useState<'start' | 'answering' | 'waiting' | 'results'>('start');
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState<Record<number, string>>({});
+    const [creatorAnswers, setCreatorAnswers] = useState<Record<number, string> | null>(null);
     const [partnerAnswers, setPartnerAnswers] = useState<Record<number, string> | null>(null);
 
     const [loading, setLoading] = useState(false);
-    const [score, setScore] = useState(0);
+    const [score, setScore] = useState<number | null>(null);
     const [quizSlug, setQuizSlug] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
 
@@ -47,8 +48,15 @@ export default function CouplesQuizPage() {
 
             if (error) throw error;
             if (data) {
-                setPartnerAnswers(data.answers);
+                setCreatorAnswers(data.creator_answers);
+                setPartnerAnswers(data.partner_answers);
                 setQuizSlug(data.slug);
+
+                // If partner already answered, show results immediately
+                if (data.partner_answers && data.score !== null) {
+                    setScore(data.score);
+                    setStep('results');
+                }
             }
         } catch (err) {
             console.error('Error fetching quiz:', err);
@@ -68,11 +76,11 @@ export default function CouplesQuizPage() {
         if (currentQuestionIndex < defaultQuestions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
         } else {
-            if (id && id !== 'new' && partnerAnswers) {
-                // Secondary user (Partner B) answering
-                calculateResults(newAnswers);
+            if (id && id !== 'new' && creatorAnswers) {
+                // Partner B (Secondary user) answering
+                savePartnerResults(newAnswers);
             } else {
-                // Primary user (Creator A) finishing
+                // Creator A (Primary user) finishing
                 saveQuiz(newAnswers);
             }
         }
@@ -88,7 +96,7 @@ export default function CouplesQuizPage() {
                 creator_id: userData.user?.id || null,
                 slug,
                 questions: defaultQuestions,
-                answers: finalAnswers
+                creator_answers: finalAnswers
             });
 
             if (error) throw error;
@@ -102,20 +110,37 @@ export default function CouplesQuizPage() {
         }
     };
 
-    const calculateResults = (finalAnswers: Record<number, string>) => {
+    const savePartnerResults = async (finalAnswers: Record<number, string>) => {
         setLoading(true);
-        setTimeout(() => {
+        try {
             let matches = 0;
             defaultQuestions.forEach(q => {
-                if (finalAnswers[q.id] === partnerAnswers?.[q.id]) {
+                if (finalAnswers[q.id] === creatorAnswers?.[q.id]) {
                     matches++;
                 }
             });
             const finalScore = Math.round((matches / defaultQuestions.length) * 100);
+
+            // Update the quiz in Supabase with partner answers and score
+            const { error } = await supabase
+                .from('couples_quizzes')
+                .update({
+                    partner_answers: finalAnswers,
+                    score: finalScore
+                })
+                .eq('slug', id);
+
+            if (error) throw error;
+
             setScore(finalScore);
+            setPartnerAnswers(finalAnswers);
             setStep('results');
+        } catch (err: any) {
+            console.error('Error saving partner results:', err);
+            alert(`Failed to save results: ${err.message || "Please try again."}`);
+        } finally {
             setLoading(false);
-        }, 1500);
+        }
     };
 
     const shareQuiz = () => {
@@ -142,12 +167,21 @@ export default function CouplesQuizPage() {
                                 How well do you really know each other? Answer 5 fun questions and see if your hearts beat in sync!
                             </p>
                             <div className="space-y-3">
-                                <button
-                                    onClick={handleStart}
-                                    className="w-full py-4 bg-gradient-to-r from-rose-500 to-indigo-600 text-white rounded-2xl font-bold text-lg shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 group"
-                                >
-                                    Start Quiz <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-                                </button>
+                                {partnerAnswers ? (
+                                    <button
+                                        onClick={() => setStep('results')}
+                                        className="w-full py-4 bg-gradient-to-r from-indigo-500 to-rose-600 text-white rounded-2xl font-bold text-lg shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 group"
+                                    >
+                                        View Results <Sparkles className="group-hover:rotate-12 transition-transform" />
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={handleStart}
+                                        className="w-full py-4 bg-gradient-to-r from-rose-500 to-indigo-600 text-white rounded-2xl font-bold text-lg shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 group"
+                                    >
+                                        Start Quiz <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                                    </button>
+                                )}
                                 <button
                                     onClick={() => navigate('/')}
                                     className="w-full py-4 bg-white border-2 border-gray-100 text-gray-500 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
@@ -227,7 +261,7 @@ export default function CouplesQuizPage() {
                                                 strokeWidth="8"
                                                 fill="transparent"
                                                 strokeDasharray={2 * Math.PI * 58}
-                                                strokeDashoffset={2 * Math.PI * 58 * (1 - score / 100)}
+                                                strokeDashoffset={2 * Math.PI * 58 * (1 - (score || 0) / 100)}
                                                 className="text-rose-500 transition-all duration-1000 ease-out"
                                             />
                                         </svg>
