@@ -57,13 +57,13 @@ out/
 
 # Gatsby
 .cache/
-public/
+# public/
 
 # Jekyll
 _site/
 
 # CNAME (for GitHub Pages custom domain)
-CNAME
+/CNAME
 
 # For exposed key
 micro-saas.pem
