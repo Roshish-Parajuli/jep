@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, FileText, PlusCircle, ExternalLink, Mail, ArrowRight, Layout, Sparkles } from 'lucide-react';
+import { Heart, FileText, PlusCircle, ExternalLink, Mail, ArrowRight, Layout, Sparkles, Coffee } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 const FloatingParticles: React.FC = () => (
@@ -201,6 +201,30 @@ const HomePage: React.FC = () => {
               <p className="text-slate-400">No bloat. No complex setups. Just simple SaaS tools that solve one thing perfectly and stay accessible forever.</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Donation Section */}
+      <section className="py-20 bg-indigo-600 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-8 backdrop-blur-sm border border-white/20">
+            <Coffee className="text-white" size={32} />
+          </div>
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-6">
+            Support My Work
+          </h2>
+          <p className="text-lg md:text-xl text-indigo-100 mb-10 leading-relaxed max-w-2xl mx-auto">
+            If this platform has been helpful to you, please consider donating. Your support helps keep these tools free and is deeply appreciated right now. I am really in need, and every single contribution makes a massive difference!
+          </p>
+          <a
+            href="https://buymemomo.com/thedeveloper"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-white text-indigo-600 text-lg font-bold hover:bg-indigo-50 hover:scale-105 transition-all shadow-xl"
+          >
+            <Heart className="text-rose-500 fill-rose-500" size={24} /> Donate to Support
+          </a>
         </div>
       </section>
 
